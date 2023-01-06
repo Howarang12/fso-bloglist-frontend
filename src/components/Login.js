@@ -1,13 +1,29 @@
 import React, {useState} from 'react'
+import loginService from '../services/blogs'
 
-const Login = () => {
+const Login = ({user, setUser, errorMessage, setErrorMessage}) => {
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
-	const handleLogin = (e) => {
+	const handleLogin = async (e) => {
 		e.preventDefault()
 		console.log(`Logging in ${username}`)
+		try {
+			const user = await loginService.login({
+				username, password
+			})
+			setUser(user)
+			setUsername('')
+			setPassword('')
+		} catch (error) {
+			setErrorMessage('Wrong credentials')
+			setTimeout(() => {
+				setErrorMessage(null)
+			}, 5000)
+		}
 	}
+
+
 	return (
 		<form onSubmit={handleLogin}>
 			<h1>log in to application</h1>
@@ -16,6 +32,7 @@ const Login = () => {
 				<input 
 					type="text" 
 					value={username}
+					name='username'
 					onChange={e => setUsername(e.target.value)}
 				/>
 			</div>
@@ -24,6 +41,7 @@ const Login = () => {
 				<input 
 					type="text" 
 					value={password}
+					name='password'
 					onChange={e => setPassword(e.target.value)}
 				/>
 			</div>
